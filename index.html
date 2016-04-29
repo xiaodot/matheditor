@@ -9,15 +9,126 @@
 <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 <script src="bower_components/angular/angular.js"></script>
-
+<link rel="stylesheet" href="bower_components/katex-build/katex.min.css">
+<script src="bower_components/katex-build/katex.min.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['{$','$}']]}
+});
+MathJax.Hub.config.extensions.push("measureTime.js", "fast-preview.js");
+MathJax.Hub.Config({
+  "fast-preview": {
+    Chunks: {EqnChunk: 10000, EqnChunkFactor: 1, EqnChunkDelay: 0},
+    color: "inherit!important",
+    updateTime: 30, updateDelay: 6,
+    messageStyle: "none",
+    disabled: false
+  }
+});
+MathJax.Hub.Config({
+  "HTML-CSS": {
+    preferredFont: "STIX",
+    EqnChunk: 10000,
+  }
+});
+</script>
+<!-- <script type="text/javascript" async src="bower_components/MathJax/unpacked/MathJax.js?config=TeX-MML-AM_CHTML"></script> -->
+<!-- <script type="text/javascript" async src="bower_components/MathJax/unpacked/MathJax.js?config=TeX-MML-AM_SVG"></script> -->
 </head>
 
-<body>
+<body onkeyup="keyup2(event)">
 <p>
-When $a\ne0$,
-$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+When {$a\ne0$},
+<div id="math">
+$$A+B-C$$
+</div>
 </p>
-<script type="text/javascript" src="bower_components/MathJax/MathJax.js?config=TeX-AMS_HTML-full"></script>
+
+<script>
+var elem = document.getElementById('math');
+katex.render("c = \\pm\\sqrt{a^2 + b^2}", elem);
+// setTimeout(function() {
+//   var math = document.getElementById("math");
+//   // math.innerHTML = '$$x$$';
+//   // MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
+//   var math = MathJax.Hub.getAllJax("MathDiv")[1];
+//   MathJax.Hub.Queue(["Text",math,"x+1"]);
+// }, 2000)
+var mathpos = 0;
+var mathstr = '\\frac{B}{45}+A+B-C';
+
+var keyup2 = function(evt) {
+  var key = event.keyCode || event.which;
+  console.log(key);
+  var keychar = String.fromCharCode(key);
+  if(key == 37) {
+    mathpos--;
+  }
+  if(key == 39) {
+    mathpos++;
+  }
+  if(key >= 65 && key <= 90 || key >= 48 && key <= 57) {
+    mathstr = [mathstr.slice(0, mathpos), keychar, mathstr.slice(mathpos)].join('');
+    mathpos++;
+  }
+  if(key == 8) {
+    mathstr = [mathstr.slice(0, mathpos-1), mathstr.slice(mathpos)].join('');
+    mathpos--;
+  }
+  mathpos = mathpos % (mathstr.length + 1);
+  var curstr = [mathstr.slice(0, mathpos), '|', mathstr.slice(mathpos)].join('');
+  console.log(curstr);
+
+  var math = document.getElementById("math");
+  katex.render(curstr, elem);
+  // math.style.visibility = 'hidden';
+  // math.innerHTML = curstr;
+  // MathJax.Hub.Queue(function() {
+  //   math.innerHTML = curstr;
+  // }, ["Typeset", MathJax.Hub, math], function() {
+  //   math.style.visibility = '';
+  // });
+  // var math = MathJax.Hub.getAllJax("MathDiv")[1];
+  // MathJax.Hub.Queue(["Text", math, "x+1" + mathpos]);
+}
+
+var keyup = function(evt) {
+  return;
+  var key = event.keyCode || event.which;
+  console.log(key);
+  var keychar = String.fromCharCode(key);
+  if(key == 37) {
+    mathpos--;
+  }
+  if(key == 39) {
+    mathpos++;
+  }
+  if(key >= 65 && key <= 90 || key >= 48 && key <= 57) {
+    mathstr = [mathstr.slice(0, mathpos), keychar, mathstr.slice(mathpos)].join('');
+    mathpos++;
+  }
+  if(key == 8) {
+    mathstr = [mathstr.slice(0, mathpos-1), mathstr.slice(mathpos)].join('');
+    mathpos--;
+  }
+  mathpos = mathpos % (mathstr.length + 1);
+  var curstr = ['$$', mathstr.slice(0, mathpos), '|', mathstr.slice(mathpos), '$$'].join('');
+  console.log(curstr);
+
+  var math = document.getElementById("math");
+  // math.style.visibility = 'hidden';
+  // math.innerHTML = curstr;
+  // MathJax.Hub.Queue(function() {
+  //   math.innerHTML = curstr;
+  // }, ["Typeset", MathJax.Hub, math], function() {
+  //   math.style.visibility = '';
+  // });
+  var math = MathJax.Hub.getAllJax("MathDiv")[1];
+  MathJax.Hub.Queue(["Text", math, "x+1" + mathpos]);
+};
+
+</script>
+
 </body>
 
 </html>
